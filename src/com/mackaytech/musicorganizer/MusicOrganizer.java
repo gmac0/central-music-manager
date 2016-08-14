@@ -10,8 +10,8 @@ import java.util.Map;
  */
 public class MusicOrganizer {
     //private static String searchFolder = "C:\\Users\\Roddy\\Desktop\\untagged rips\\Bassnectar\\Divergent Spectrum\\";
-    private static String searchFolder = "C:\\Users\\Roddy\\Desktop\\untagged rips\\Bassnectar\\";
-    private static String destinationFolder = "C:\\Users\\Roddy\\Desktop\\test\\";
+    private static String searchFolder = "E:\\Media\\test_in";
+    private static String destinationFolder = "E:\\Media\\test\\";
 
     public static void main(String[] args) {
         FileHandler fileHandler = new FileHandler(MusicOrganizer.searchFolder);
@@ -31,6 +31,7 @@ public class MusicOrganizer {
         for (Map.Entry<File, HashMap> entry : map.entrySet()) {
             HashMap<String, String> metadata = entry.getValue();
             String folderPath = metadata.get("Artist") + File.separator + metadata.get("Album");
+            System.out.println(metadata.get("Bitrate"));
             filePaths.put(entry.getKey(), folderPath);
         }
         return filePaths;
