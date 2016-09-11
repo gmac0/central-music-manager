@@ -14,9 +14,17 @@ So I set off. Here's what I am hoping the project will do:
 * Actually sound awesome. Play FLAC files and other losses formats. Also, be able to handle a wide variety of less awesome file types. Both WMA and AAC files hopefully.
 * Be lightweight enough to run on a Raspberry Pi or other microcomputer.
 
+## Current state
+
+The first stage of this project is creating a program that could be run on any computer in my house (including Windows and Mac) and transfer music files to an external hard drive. The program also needed to handle duplicate songs, even if they had different file formats or file names. Of course, I also wanted to only keep the highest bitrate version of any one song file. So the MusicOrganizer project was born. You can run the music organizer with `java -jar MusicOrganizer.jar pathToSearch pathToOutput`. MusicOrganizer.jar can be found at out\artifacts\MusicOrganizer_jar. I've run MusicOrganizer successfuly on both Mac and Windows with mp3, flac, m4a, and wma files. This program is still in early state though, so YMMV. Plea let me know if you encounter any bugs!
+
+Once I had my external hard drive filled with music, I plugged it in to a Raspberry Pi running Volumio. There's still work to do to get this backing up somewhere (ideally locally and/or to a cloud service), as well as making the music accessible from outside my WiFi network.
+
 ## Links, sources, and similar projects
 
+* Volumio Music Player: https://volumio.org/
+  * Solid Raspberry Pi software for playing within a network, but lacking ability to stream tunes to other devices or access music from other locations
+* Jaudiotagger library: http://www.jthink.net/jaudiotagger/
+  * Java library to fetch audio metatag data
 * Python Audio Tools: http://audiotools.sourceforge.net/
   * Possible source of filetype decoders and converters
-* Volumio Music Player https://volumio.org/
-  * Similar project that is lacking ability to stream tunes to other devices or access music from other locations

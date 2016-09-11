@@ -2,21 +2,21 @@ package com.mackaytech.musicorganizer;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.security.spec.ECField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 /**
+ * Filesystem helper class
  * Created by Glen on 7/11/2015.
  */
 public class FileHandler {
-    //private static String searchFolder = "C:\\Users\\Roddy\\Desktop\\untagged rips\\Bassnectar\\Divergent Spectrum\\";
-    private static Stack<String> pendingFolderPaths = new Stack<String>();
-    private static ArrayList<File> currentFiles = new ArrayList<File>();
+    private Stack<String> pendingFolderPaths = new Stack<String>();
+    private ArrayList<File> currentFiles = new ArrayList<File>();
     private String destinationFolder;
 
+    // Constructor, sets a root folder
     public FileHandler (String rootFolder) {
         System.out.println("adding " + rootFolder + " to pendingFolderPaths");
         pendingFolderPaths.push(rootFolder);
@@ -28,14 +28,24 @@ public class FileHandler {
 
     public void scanNextFolderContents() {
         String folderPath = pendingFolderPaths.pop();
-        System.out.println("scanning " + folderPath);
+        System.out.println("FileHandler scanning folder" + folderPath);
+        this.scanFolderContents(folderPath);
+    }
+
+    // Clears the list of current files and fills the list with the current folder's contents
+    public void scanFolderContents(String folderPath) {
         File folder = new File(folderPath);
         File[] contents = folder.listFiles();
+        if (contents == null) {
+            System.out.println("Contents of " + folderPath + " null!");
+            return;
+        }
+        currentFiles.clear();
         for (File file : contents) {
             if (file.isFile()) {
                 currentFiles.add(file);
             } else if (file.isDirectory()) {
-                System.out.println("adding " + file.getPath() + " to pendingFolderPaths");
+                System.out.println("  adding " + file.getPath() + " to pendingFolderPaths");
                 pendingFolderPaths.push(file.getPath());
             }
         }
@@ -45,6 +55,7 @@ public class FileHandler {
         return currentFiles;
     }
 
+    // Moves a map of files, key = file to move, value = path to move to
     public void moveFiles(HashMap filePaths) {
         Map<File, String> map = filePaths;
         for (Map.Entry<File, String> entry : map.entrySet()) {
@@ -70,29 +81,4 @@ public class FileHandler {
         this.destinationFolder = destinationFolder;
     }
 
-//    public static void getFileAttributes(String[] args) {
-//        File[] files = FileHandler.getFiles(FileHandler.searchFolder);
-//        for (File file : files) {
-//            MetadataHandler.getFileAttributes(file);
-//        }
-//    }
-//
-//    public static File[] getFolderList(String path) {
-//        File initialDir = new File(path);
-//        File[] files = initialDir.listFiles();
-//        return files;
-//    }
-//
-//    private static File[] getFiles(String path) {
-//        File file = new File(FileHandler.searchFolder);
-//        File[] list = file.listFiles();
-//        return list;
-//    }
-//
-//    private static boolean isMusicFile(File file) {
-//        String fileType = file.getName().split("\\.")[1];
-//        String[] musicFileTypes = new String[] {"flac", "wave"};
-//        boolean isMusicFile = Arrays.asList(musicFileTypes).contains(fileType);
-//        return isMusicFile;
-//    }
 }

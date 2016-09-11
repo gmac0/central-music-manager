@@ -17,20 +17,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 /**
+ * Wrapper class for jaudiotagger library (http://www.jthink.net/jaudiotagger/)
+ * Used to fetch metatag data from files
  * Created by Glen on 8/23/2015.
  */
 public class MetadataHandler {
 
+    // Fetches metadata attributes from a music file
     public static HashMap getFileAttributes(File filePath) {
         HashMap<String, String> attributes = new HashMap<>();
         try {
             AudioFile f = AudioFileIO.read(filePath);
             AudioHeader header = f.getAudioHeader();
-
             Tag tag = f.getTag();
+
             attributes.put("Artist", tag.getFirst(FieldKey.ARTIST));
             attributes.put("Album", tag.getFirst(FieldKey.ALBUM));
-            attributes.put("Bitrate", header.getBitRate());
+            attributes.put("Title", tag.getFirst(FieldKey.TITLE));
+            // Convert approximate numbers to real numbers (e.g. "~128" -> "128")
+            attributes.put("Bitrate", header.getBitRate().replaceAll("[^0-9]", ""));
         } catch (TagException e) {
             e.printStackTrace();
         } catch (ReadOnlyFileException e) {
@@ -45,6 +50,7 @@ public class MetadataHandler {
         return attributes;
     }
 
+    // Fetches audio metadata from a list of files
     public static HashMap getFilesMetadata(ArrayList<File> files) {
         HashMap filesMetadata = new HashMap<File, HashMap>();
         HashMap attributes = new HashMap<>();
@@ -58,7 +64,7 @@ public class MetadataHandler {
             }
         }
         if (filesMetadata.size() == 0) {
-            System.out.println("getFilesMetadata found no applicable music or image files");
+            System.out.println("getFilesMetadata found no applicable music or image files in " + files);
         }
         return filesMetadata;
     }
