@@ -30,7 +30,9 @@ public class MetadataHandler {
             AudioFile f = AudioFileIO.read(filePath);
             AudioHeader header = f.getAudioHeader();
             Tag tag = f.getTag();
-
+            if (tag == null) {
+                throw new TagException("No tag data available for file " + filePath.getName());
+            }
             attributes.put("Artist", tag.getFirst(FieldKey.ARTIST));
             attributes.put("Album", tag.getFirst(FieldKey.ALBUM));
             attributes.put("Title", tag.getFirst(FieldKey.TITLE));
@@ -57,13 +59,18 @@ public class MetadataHandler {
         for (File file : files) {
             if (MetadataHandler.isMusicFile(file)) {
                 attributes = MetadataHandler.getFileAttributes(file);
+                if (attributes.size() == 0) {
+                    System.out.println("ERROR: Could not get meta data from file "
+                            + file.getPath() + file.getName() + " skipping to next file");
+                    continue;
+                }
                 filesMetadata.put(file, attributes);
             }
             if (MetadataHandler.isImageFile(file) && attributes.size() > 0) {
                 filesMetadata.put(file, attributes);
             }
         }
-        if (filesMetadata.size() == 0) {
+        if (filesMetadata.size() == 0 && files.size() > 0) {
             System.out.println("getFilesMetadata found no applicable music or image files in " + files);
         }
         return filesMetadata;
@@ -72,7 +79,7 @@ public class MetadataHandler {
     private static boolean isMusicFile(File file) {
         String[] parts = file.getName().split("\\.");
         String fileType = parts[parts.length - 1];
-        String[] musicFileTypes = new String[] {"flac", "wav", "mp3", "m4a", "wma"};
+        String[] musicFileTypes = new String[] {"flac", "wav", "mp3", "m4a", "wma", "mp4", "m4p"};
         return Arrays.asList(musicFileTypes).contains(fileType);
     }
 

@@ -45,7 +45,7 @@ public class DuplicateHandler {
     // Scans incoming files for multiple of the same song, removes lower bitrate version from filePaths
     private void resolveIncomingFiles(Map.Entry<File, HashMap> fileMetadata, HashMap filePaths) {
         HashMap<String, String> metadata = fileMetadata.getValue();
-        Integer bitrate = Integer.parseInt(metadata.get("Bitrate"));
+        Integer bitrate = this.getBitrate(metadata);
         String fileIndex = this.getFileIndex(metadata);
 
         if (this.incomingFileBitrates.get(fileIndex) != null) {
@@ -67,6 +67,13 @@ public class DuplicateHandler {
         }
     }
 
+    private int getBitrate(HashMap<String, String> metadata) {
+        if (metadata.get("Bitrate") == null) {
+            return 0;
+        }
+        return Integer.parseInt(metadata.get("Bitrate"));
+    }
+
     // Scans destination folder for music files and saves their bitrates and paths
     private void scanDir(String targetDir) {
         this.fileHandler.scanFolderContents(targetDir);
@@ -75,7 +82,7 @@ public class DuplicateHandler {
         Map<File, HashMap> map = filesMetadata;
         for (Map.Entry<File, HashMap> entry : map.entrySet()) {
             HashMap<String, String> metadata = entry.getValue();
-            existingFileBitrates.put(this.getFileIndex(metadata), Integer.parseInt(metadata.get("Bitrate")));
+            existingFileBitrates.put(this.getFileIndex(metadata), this.getBitrate(metadata));
             existingFilePaths.put(this.getFileIndex(metadata), entry.getKey());
         }
         this.scannedDirs.add(targetDir);
@@ -93,7 +100,7 @@ public class DuplicateHandler {
         if (this.existingFileBitrates.get(index) == null) {
             return;
         }
-        if (Integer.parseInt(metadata.get("Bitrate")) > this.existingFileBitrates.get(index)) {
+        if (this.getBitrate(metadata) > this.existingFileBitrates.get(index)) {
             System.out.println(metadata + " is higher bitrate than " + this.existingFileBitrates.get(index));
             File toDelete = this.existingFilePaths.get(index);
             System.out.println("deleting " + toDelete);

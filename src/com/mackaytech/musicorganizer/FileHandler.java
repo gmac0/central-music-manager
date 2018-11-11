@@ -2,10 +2,7 @@ package com.mackaytech.musicorganizer;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Filesystem helper class
@@ -28,7 +25,7 @@ public class FileHandler {
 
     public void scanNextFolderContents() {
         String folderPath = pendingFolderPaths.pop();
-        System.out.println("FileHandler scanning folder" + folderPath);
+        System.out.println("FileHandler scanning folder " + folderPath);
         this.scanFolderContents(folderPath);
     }
 
@@ -37,7 +34,6 @@ public class FileHandler {
         File folder = new File(folderPath);
         File[] contents = folder.listFiles();
         if (contents == null) {
-            System.out.println("Contents of " + folderPath + " null!");
             return;
         }
         currentFiles.clear();
@@ -66,7 +62,7 @@ public class FileHandler {
             File destinationFile = new File(destination.toPath() + File.separator + file.getName());
             if (!destinationFile.exists()) {
                 try {
-                    System.out.println("Copying " + file.getName());
+                    System.out.println("Copying " + destinationFile.toPath());
                     Files.copy(file.toPath(), destinationFile.toPath());
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -79,6 +75,24 @@ public class FileHandler {
 
     public void setDestinationFolder(String destinationFolder) {
         this.destinationFolder = destinationFolder;
+    }
+
+    public String scrubDirectoryName(String directoryName) {
+        // check for illegal characters
+        String[] invalidCharacters = {"<", ">", ":", "\"", "/", "\\", "|", "?", "*"};
+        for (String invalid: invalidCharacters) {
+            directoryName = directoryName.replace(invalid, "_");
+        }
+        // check for illegal trailing characters
+        if (directoryName.length() > 0) {
+            if (directoryName.charAt(directoryName.length() - 1) == '.') {
+                directoryName = directoryName.substring(0, directoryName.length() - 1) + '\uF029';
+            }
+            if (directoryName.charAt(directoryName.length() - 1) == ' ') {
+                directoryName = directoryName.substring(0, directoryName.length() - 1);
+            }
+        }
+        return directoryName;
     }
 
 }

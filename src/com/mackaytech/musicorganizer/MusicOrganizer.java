@@ -34,19 +34,21 @@ public class MusicOrganizer {
             fileHandler.scanNextFolderContents();
             ArrayList<File> files = fileHandler.getFolderFiles();
             HashMap filesMetadata = MetadataHandler.getFilesMetadata(files);
-            HashMap filePaths = MusicOrganizer.getFolderPathsFromMetadata(filesMetadata);
+            HashMap filePaths = MusicOrganizer.getFolderPathsFromMetadata(filesMetadata, fileHandler);
             HashMap finalFilePaths = duplicateHandler.resolveDuplicates(filesMetadata, filePaths);
             fileHandler.moveFiles(finalFilePaths);
         }
     }
 
     // Generates the destination folder path based on the music file's metadata
-    private static HashMap<File, String> getFolderPathsFromMetadata(HashMap filesMetadata) {
+    private static HashMap<File, String> getFolderPathsFromMetadata(HashMap filesMetadata, FileHandler fileHandler) {
         HashMap<File, String> filePaths = new HashMap<>();
         Map<File, HashMap> map = filesMetadata;
         for (Map.Entry<File, HashMap> entry : map.entrySet()) {
             HashMap<String, String> metadata = entry.getValue();
-            String folderPath = metadata.get("Artist") + File.separator + metadata.get("Album");
+            String artistDir = fileHandler.scrubDirectoryName(metadata.get("Artist"));
+            String albumDir = fileHandler.scrubDirectoryName(metadata.get("Album"));
+            String folderPath = artistDir + File.separator + albumDir;
             filePaths.put(entry.getKey(), folderPath);
         }
         return filePaths;
